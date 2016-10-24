@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="Accountnumber.cs" />
     <Compile Include="Eintrag.cs" />
-    <Compile Include="EintragZuZiffernConverter.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ZeilenZuEintragConverter.cs" />
     <Compile Include="FileProvider.cs" />
@@ -53,7 +52,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI.cs" />
-    <Compile Include="ZiffernZuAccountnumberConverter.cs" />
+    <Compile Include="EintragZuAccountnumberConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
