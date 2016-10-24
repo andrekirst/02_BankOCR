@@ -13,14 +13,6 @@ namespace _02_BankOCR
             EnterGedrueckt?.Invoke(anfang, ende);
         }
 
-        public void ZeigeListe(IEnumerable<string> fizzBuzzListe)
-        {
-            foreach (string eintrag in fizzBuzzListe)
-            {
-                Console.WriteLine(eintrag);
-            }
-        }
-
         public void ZeigeStarttext(string startText)
         {
             Console.Write(startText);
@@ -31,14 +23,8 @@ namespace _02_BankOCR
             // "asdasd"
             // "1,2"
             string zeile = Console.ReadLine();
-            Tuple<int, int> zahlen = GibMirdieZahlenAusDerZeichenkette(zeile);
-            OnEnter(zahlen.Item1, zahlen.Item2);
-        }
-
-        private Tuple<int, int> GibMirdieZahlenAusDerZeichenkette(string zeile)
-        {
-            int[] split = zeile.Split(',').Select(x => Int32.Parse(x)).ToArray();
-            return new Tuple<int, int>(split[0], split[1]);
+            //Tuple<int, int> zahlen = GibMirdieZahlenAusDerZeichenkette(zeile);
+            //OnEnter(zahlen.Item1, zahlen.Item2);
         }
     }
 }

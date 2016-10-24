@@ -15,8 +15,6 @@ namespace _02_BankOCR
 
             ui.EnterGedrueckt += (anfang, ende) =>
             {
-                IEnumerable<string> fizzBuzzListe = interactors.ErstelleFizzBuzzListe(anfang, ende);
-                ui.ZeigeListe(fizzBuzzListe);
             };
 
             string startText = interactors.GebeMirStarttext();
