@@ -50,8 +50,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Test_Parser.cs" />
+    <Compile Include="Test_ZeilenZuEintragConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\02_BankOCR\02_BankOCR.csproj">
+      <Project>{45637f9d-3372-4ecd-a17d-39419b0e520f}</Project>
+      <Name>02_BankOCR</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
