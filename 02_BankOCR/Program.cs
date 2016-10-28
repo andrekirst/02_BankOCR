@@ -13,8 +13,10 @@ namespace _02_BankOCR
             UI ui = new UI();
             Interactors interactors = new Interactors();
 
-            ui.EnterGedrueckt += (anfang, ende) =>
+            ui.EnterGedrueckt += (dateiname) =>
             {
+                List<Accountnumber> accountnumbers = interactors.ParseOCR(dateiname);
+                ui.ZeigeAccountnumbers(accountnumbers);
             };
 
             string startText = interactors.GebeMirStarttext();

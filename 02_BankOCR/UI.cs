@@ -6,11 +6,11 @@ namespace _02_BankOCR
 {
     public class UI
     {
-        public event Action<int, int> EnterGedrueckt;
+        public event Action<string> EnterGedrueckt;
 
-        public void OnEnter(int anfang, int ende)
+        public void OnEnter(string dateiname)
         {
-            EnterGedrueckt?.Invoke(anfang, ende);
+            EnterGedrueckt?.Invoke(dateiname);
         }
 
         public void ZeigeStarttext(string startText)
@@ -20,11 +20,16 @@ namespace _02_BankOCR
 
         public void ZeigeDialog()
         {
-            // "asdasd"
-            // "1,2"
-            string zeile = Console.ReadLine();
-            //Tuple<int, int> zahlen = GibMirdieZahlenAusDerZeichenkette(zeile);
-            //OnEnter(zahlen.Item1, zahlen.Item2);
+            string dateiname = Console.ReadLine();
+            OnEnter(dateiname);
+        }
+
+        internal void ZeigeAccountnumbers(List<Accountnumber> accountnumbers)
+        {
+            foreach (Accountnumber accountnumber in accountnumbers)
+            {
+                Console.WriteLine(accountnumber.Wert);
+            }
         }
     }
 }
