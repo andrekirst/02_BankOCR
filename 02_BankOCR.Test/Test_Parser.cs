@@ -32,6 +32,16 @@ namespace _02_BankOCR.Test
                         "  |  | _|  | _||_   ||_||_|",
                         ""
                     }
+                },
+                new Eintrag()
+                {
+                    Zeilen = new List<string>()
+                    {
+                        "    _  _     _  _  _  _  _ ",
+                        "  |    _||_||_  _|  ||_||_|",
+                        "  |  | _|  | _||_   ||_||_|",
+                        ""
+                    }
                 }
             };
 
@@ -39,17 +49,28 @@ namespace _02_BankOCR.Test
             {
                 new Accountnumber()
                 {
-                    Wert = "123456789"
+                    Wert = "123456789",
+                    Status = AccountnumberStatus.Ok
                 },
                 new Accountnumber()
                 {
-                    Wert = "173452788"
+                    Wert = "173452788",
+                    Status = AccountnumberStatus.Error
+                },
+                new Accountnumber()
+                {
+                    Wert = "1?3452788",
+                    Status = AccountnumberStatus.Illegible
                 }
             };
 
             List<Accountnumber> result = Parser.InAccountnumberParsen(eintraege);
 
-            Assert.IsTrue(result.SequenceEqual(expected));
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(expected[i].Wert, result[i].Wert);
+                Assert.AreEqual(expected[i].Status, result[i].Status);
+            }
         }
 
     }

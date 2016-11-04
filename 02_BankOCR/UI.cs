@@ -28,7 +28,10 @@ namespace _02_BankOCR
         {
             foreach (Accountnumber accountnumber in accountnumbers)
             {
-                Console.WriteLine(accountnumber.Wert);
+                string status = accountnumber.Status == AccountnumberStatus.Ok
+                    ? ""
+                    : accountnumber.Status.ToString().Substring(0, 3).ToUpper();
+                Console.WriteLine(accountnumber.Wert + " " + status);
             }
         }
     }

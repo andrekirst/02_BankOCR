@@ -13,10 +13,11 @@ namespace _02_BankOCR
             List<Accountnumber> accountnumbern = new List<Accountnumber>();
             foreach (Eintrag eintrag in eintraege)
             {
-                List<int> pruefsummen = EintragZuAccountnumberConverter.PruefsummenBestimmen(eintrag);
-                List<int> ziffern = EintragZuAccountnumberConverter.ZiffernDurchVergleichBestimmen(pruefsummen);
-                Accountnumber accountnumber = EintragZuAccountnumberConverter.ZuAccountnumberKonvertieren(ziffern);
-                accountnumbern.Add(accountnumber);
+                Accountnumber aktuelleAccountnumber = new Accountnumber();
+                List<int> ziffern = EintragZuAccountnumberConverter.ZiffernDurchVergleichBestimmen(eintrag);
+                aktuelleAccountnumber.Wert = EintragZuAccountnumberConverter.ZuAccountnumberKonvertieren(ziffern);
+                aktuelleAccountnumber.Status = EintragZuAccountnumberConverter.AccountnumberStatusPruefen(ziffern);
+                accountnumbern.Add(aktuelleAccountnumber);
             }
             return accountnumbern;
         }

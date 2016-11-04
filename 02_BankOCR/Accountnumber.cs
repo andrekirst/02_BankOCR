@@ -10,6 +10,8 @@ namespace _02_BankOCR
     {
         public string Wert { get; set; }
 
+        public AccountnumberStatus Status { get; set; }
+
         public override bool Equals(object other)
         {
             var toCompareWith = other as Accountnumber;
@@ -22,5 +24,12 @@ namespace _02_BankOCR
         {
             return base.GetHashCode();
         }
+    }
+
+    public enum AccountnumberStatus
+    {
+        Ok,
+        Error,
+        Illegible
     }
 }
