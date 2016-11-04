@@ -8,69 +8,91 @@ namespace _02_BankOCR
 {
     public class EintragZuAccountnumberConverter
     {
-        public static List<int> PruefsummenBestimmen(Eintrag eintrag)
+        internal static List<string> SegmenteExtrahieren(Eintrag eintrag)
         {
-            List<List<string>> segmente = SegmenteExtrahieren(eintrag);
-            return segmente.Select(segment => PruefsummeFuerSegmentBestimmen(segment)).ToList();
-        }
-
-        internal static List<List<string>> SegmenteExtrahieren(Eintrag eintrag)
-        {
-            List<List<string>> result = new List<List<string>>();
+            List<string> result = new List<string>();
 
             const int anzahlSegemente = 9;
             for (int i = 0; i < anzahlSegemente; i++)
             {
-                result.Add(new List<string>());
+                result.Add("");
                 // Nur drei Zeilen, weil die letzte Zeile der Abschnitt für den nächsten Eintrag ist
                 foreach (string zeile in eintrag.Zeilen.Take(3))
                 {
                     int zeichenIndex = i * 3;
-                    result[i].Add(zeile[zeichenIndex].ToString());
-                    result[i].Add(zeile[zeichenIndex + 1].ToString());
-                    result[i].Add(zeile[zeichenIndex + 2].ToString());
+                    result[i] += zeile[zeichenIndex].ToString();
+                    result[i] += zeile[zeichenIndex + 1].ToString();
+                    result[i] += zeile[zeichenIndex + 2].ToString();
                 }
             }
 
             return result;
         }
 
-        internal static int PruefsummeFuerSegmentBestimmen(List<string> ziffer)
+        public static AccountnumberStatus AccountnumberStatusPruefen(List<int> ziffern)
         {
-            var binString = string.Join("", ziffer.Select(c => c == " " ? "0" : "1"));
-            return Convert.ToInt32(binString, 2);
+            if (ziffern.Contains(-1)) return AccountnumberStatus.Illegible;
+
+            return CheckGueltigeAccountnumber(ziffern) ? AccountnumberStatus.Ok : AccountnumberStatus.Error;
         }
 
-        public static List<int> ZiffernDurchVergleichBestimmen(List<int> pruefsummen)
+        internal static bool CheckGueltigeAccountnumber(List<int> ziffern)
         {
-            return pruefsummen.Select(p => ZifferDurchVergleichBestimmen(p)).ToList();
-        }
+            int checksumme = ChecksummeBerechnen(ziffern);
 
-        internal static int ZifferDurchVergleichBestimmen(int pruefsumme)
-        {
-            Dictionary<int, int> vergleichsDict = new Dictionary<int, int>()
+            if (checksumme%11 == 0)
             {
-                { Convert.ToInt32("010101111", 2), 0 },
-                { Convert.ToInt32("000001001", 2), 1 },
-                { Convert.ToInt32("010011110", 2), 2 },
-                { Convert.ToInt32("010011011", 2), 3 },
-                { Convert.ToInt32("000111001", 2), 4 },
-                { Convert.ToInt32("010110011", 2), 5 },
-                { Convert.ToInt32("010110111", 2), 6 },
-                { Convert.ToInt32("010001001", 2), 7 },
-                { Convert.ToInt32("010111111", 2), 8 },
-                { Convert.ToInt32("010111011", 2), 9 }
+                return true;
+            }
+            return false;
+        }
+
+        internal static int ChecksummeBerechnen(List<int> ziffern)
+        {
+            // Dreht Elemente in Liste um, zur einfacheren Berechnung der Checksumme
+            ziffern.Reverse();
+
+            int checksumme = 0;
+            for (int i = 0; i < ziffern.Count; i++)
+            {
+                checksumme += ziffern[i]*(i + 1);
+            }
+            return checksumme;
+        }
+
+        public static List<int> ZiffernDurchVergleichBestimmen(Eintrag eintrag)
+        {
+            List<string> segmente = SegmenteExtrahieren(eintrag);
+            return segmente.Select(ZifferDurchVergleichBestimmen).ToList();
+        }
+
+        internal static int ZifferDurchVergleichBestimmen(string ziffernZeichenfolge)
+        {
+            Dictionary<string, int> vergleichsDict = new Dictionary<string, int>()
+            {
+                {" _ | ||_|", 0 },
+                {"     |  |", 1 },
+                {" _  _||_ ", 2 },
+                {" _  _| _|", 3 },
+                {"   |_|  |", 4 },
+                {" _ |_  _|", 5 },
+                {" _ |_ |_|", 6 },
+                {" _   |  |", 7 },
+                {" _ |_||_|", 8 },
+                {" _ |_| _|", 9 }
             };
 
-            return vergleichsDict[pruefsumme];
+            if (vergleichsDict.ContainsKey(ziffernZeichenfolge))
+            {
+                return vergleichsDict[ziffernZeichenfolge];
+            }
+
+            return -1;
         }
 
-        public static Accountnumber ZuAccountnumberKonvertieren(List<int> ziffern)
+        public static string ZuAccountnumberKonvertieren(List<int> ziffern)
         {
-            return new Accountnumber()
-            {
-                Wert = string.Join("", ziffern)
-            };
+            return string.Join("", ziffern).Replace("-1", "?");
         }
     }
 }

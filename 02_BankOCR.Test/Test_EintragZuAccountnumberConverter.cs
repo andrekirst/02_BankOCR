@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace _02_BankOCR.Test
 {
@@ -12,40 +13,6 @@ namespace _02_BankOCR.Test
     [TestClass]
     public class Test_EintragZuAccountnumberConverter
     {
-        [TestMethod]
-        public void Eintrag_Aus_Zahlen_1_9_Ergibt_Pruefsumme()
-        {
-            Eintrag eintrag = new Eintrag()
-            {
-                Zeilen = new List<string>()
-                {
-                    "    _  _     _  _  _  _  _ ",
-                    "  | _| _||_||_ |_   ||_||_|",
-                    "  ||_  _|  | _||_|  ||_| _|",
-                    ""
-                }
-            };
-
-            List<int> result = EintragZuAccountnumberConverter.PruefsummenBestimmen(eintrag);
-
-            List<int> expected = new List<int>
-            {
-                Convert.ToInt32("000001001", 2),
-                Convert.ToInt32("010011110", 2),
-                Convert.ToInt32("010011011", 2),
-                Convert.ToInt32("000111001", 2),
-                Convert.ToInt32("010110011", 2),
-                Convert.ToInt32("010110111", 2),
-                Convert.ToInt32("010001001", 2),
-                Convert.ToInt32("010111111", 2),
-                Convert.ToInt32("010111011", 2),
-            };
-
-            CollectionAssert.AreEqual(expected, result);
-
-
-        }
-
         [TestMethod]
         public void Neun_Ziffern_aus_Eintrag_extrahiert()
         {
@@ -60,35 +27,23 @@ namespace _02_BankOCR.Test
                 }
             };
 
-            List<List<string>> result = EintragZuAccountnumberConverter.SegmenteExtrahieren(eintrag);
+            List<string> result = EintragZuAccountnumberConverter.SegmenteExtrahieren(eintrag);
             Assert.AreEqual(9, result.Count);
-            List<string> ziffer1 = new List<string>() { " ", " ", " ", " ", " ", "|", " ",  " ", "|" };
-            CollectionAssert.AreEqual(ziffer1, result[0]);
+            string ziffer1 = "     |  |";
+            Assert.AreEqual(ziffer1, result[0]);
         }
 
         [TestMethod]
-        public void Pruefsumme_von_Ziffer_Eins_ist_Neun()
+        public void Liste_ist_Ziffer_1()
         {
-            List<string> ziffer1 = new List<string>() { " ", " ", " ", " ", " ", "|", " ", " ", "|" };
-            int result = EintragZuAccountnumberConverter.PruefsummeFuerSegmentBestimmen(ziffer1);
-
-            Assert.AreEqual(9, result);
+            int ziffer = EintragZuAccountnumberConverter.ZifferDurchVergleichBestimmen("     |  |");
+            Assert.AreEqual(1, ziffer);
         }
-
         [TestMethod]
-        public void Pruefsumme_von_Ziffer_Zwei_ist_158()
+        public void Kaputte_Zahl_ergibt_minus_1()
         {
-            List<string> ziffer1 = new List<string>() { " ", "_", " ", " ", "_", "|", "|", "_", " " };
-            int result = EintragZuAccountnumberConverter.PruefsummeFuerSegmentBestimmen(ziffer1);
-            var expected = Convert.ToInt32("010011110", 2);
-            Assert.AreEqual(expected, result);
-        }
-
-        [TestMethod]
-        public void Pruefsumme_158_ist_Ziffer_2()
-        {
-            int ziffer = EintragZuAccountnumberConverter.ZifferDurchVergleichBestimmen(158);
-            Assert.AreEqual(2, ziffer);
+            int ziffer = EintragZuAccountnumberConverter.ZifferDurchVergleichBestimmen("_________");
+            Assert.AreEqual(-1, ziffer);
         }
 
         [TestMethod]
@@ -99,14 +54,97 @@ namespace _02_BankOCR.Test
                 1,2,3,4,5,6,7,8,9
             };
 
-            Accountnumber expected = new Accountnumber()
+            string result = EintragZuAccountnumberConverter.ZuAccountnumberKonvertieren(ziffern);
+
+            Assert.AreEqual("123456789", result);
+        }
+
+        [TestMethod]
+        public void Check_345882865_sollte_gültige_Accountnumber_sein()
+        {
+            List<int> ziffern = new List<int>()
             {
-                Wert = "123456789"
+                3,4,5,8,8,2,8,6,5
             };
 
-            Accountnumber result = EintragZuAccountnumberConverter.ZuAccountnumberKonvertieren(ziffern);
+            AccountnumberStatus result = EintragZuAccountnumberConverter.AccountnumberStatusPruefen(ziffern);
 
-            Assert.AreEqual(expected.Wert, result.Wert);
+            Assert.AreEqual(AccountnumberStatus.Ok, result);
+        }
+        
+        [TestMethod]
+        public void Check_345882866_sollte_ungültige_Accountnumber_sein()
+        {
+            List<int> ziffern = new List<int>()
+            {
+                3,4,5,8,8,2,8,6,6
+            };
+
+            AccountnumberStatus result = EintragZuAccountnumberConverter.AccountnumberStatusPruefen(ziffern);
+
+            Assert.AreEqual(AccountnumberStatus.Error, result);
+        }
+
+        [TestMethod]
+        public void Check_345_minus_182866_sollte_unlesbare_Accountnumber_sein()
+        {
+            List<int> ziffern = new List<int>()
+            {
+                3,4,5,-1,8,2,8,6,6
+            };
+
+            AccountnumberStatus result = EintragZuAccountnumberConverter.AccountnumberStatusPruefen(ziffern);
+
+            Assert.AreEqual(AccountnumberStatus.Illegible, result);
+        }
+
+        [TestMethod]
+        public void Checksumme_von_123123123_ist_84()
+        {
+            int result = EintragZuAccountnumberConverter.ChecksummeBerechnen(new List<int>()
+            {
+                1,
+                2,
+                3,
+                1,
+                2,
+                3,
+                1,
+                2,
+                3
+            });
+
+            Assert.AreEqual(84, result);
+        }
+
+        [TestMethod]
+        public void Accnr_345882865_sollte_gültig_sein()
+        {
+            var result = EintragZuAccountnumberConverter.CheckGueltigeAccountnumber(new List<int>()
+            {
+                3,
+                4,
+                5,
+                8,
+                8,
+                2,
+                8,
+                6,
+                5
+            });
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void Accnr_123123123_sollte_ungültig_sein()
+        {
+            var result = EintragZuAccountnumberConverter.CheckGueltigeAccountnumber(new List<int>()
+            {
+                1,2,3,1,2,3,1,2,3
+            });
+
+            Assert.IsFalse(result);
         }
     }
 }

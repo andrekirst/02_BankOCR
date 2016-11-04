@@ -16,6 +16,7 @@ namespace _02_BankOCR
             ui.EnterGedrueckt += (dateiname) =>
             {
                 List<Accountnumber> accountnumbers = interactors.ParseOCR(dateiname);
+                FileProvider.SchreibeAccountnummernDatei(accountnumbers);
                 ui.ZeigeAccountnumbers(accountnumbers);
             };
 

@@ -11,8 +11,7 @@ namespace _02_BankOCR
 
         public List<Accountnumber> ParseOCR(string dateiname)
         {
-            FileProvider fileProvider = new FileProvider();
-            IEnumerable<string> zeilen = fileProvider.LeseDatei(dateiname);
+            IEnumerable<string> zeilen = FileProvider.LeseDatei(dateiname);
             IEnumerable<Eintrag> eintraege = ZeilenZuEintragConverter.Convert(zeilen);
             return Parser.InAccountnumberParsen(eintraege);
         }
