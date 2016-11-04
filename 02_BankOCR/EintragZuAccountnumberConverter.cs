@@ -41,6 +41,20 @@ namespace _02_BankOCR
             return Convert.ToInt32(binString, 2);
         }
 
+        public static bool AufGueltigeAccountnumberPruefen(List<int> ziffern)
+        {
+            // Dreht Elemente in Liste um, zur einfacheren Berechnung der Checksumme
+            ziffern.Reverse();
+
+            int checksumme = 0;
+            for (int i = 0; i < ziffern.Count; i++)
+            {
+                checksumme += ziffern[i]*(i + 1);
+            }
+
+            return checksumme%11 == 0;
+        }
+
         public static List<int> ZiffernDurchVergleichBestimmen(List<int> pruefsummen)
         {
             return pruefsummen.Select(p => ZifferDurchVergleichBestimmen(p)).ToList();

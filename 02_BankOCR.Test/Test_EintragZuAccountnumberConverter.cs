@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace _02_BankOCR.Test
 {
@@ -107,6 +108,31 @@ namespace _02_BankOCR.Test
             Accountnumber result = EintragZuAccountnumberConverter.ZuAccountnumberKonvertieren(ziffern);
 
             Assert.AreEqual(expected.Wert, result.Wert);
+        }
+
+        [TestMethod]
+        public void Check_345882865_sollte_gültige_Accountnumber_sein()
+        {
+            List<int> ziffern = new List<int>()
+            {
+                3,4,5,8,8,2,8,6,5
+            };
+
+            bool result = EintragZuAccountnumberConverter.AufGueltigeAccountnumberPruefen(ziffern);
+
+            Assert.IsTrue(result);
+        }
+        [TestMethod]
+        public void Check_345882866_sollte_ungültige_Accountnumber_sein()
+        {
+            List<int> ziffern = new List<int>()
+            {
+                3,4,5,8,8,2,8,6,6
+            };
+
+            bool result = EintragZuAccountnumberConverter.AufGueltigeAccountnumberPruefen(ziffern);
+
+            Assert.IsFalse(result);
         }
     }
 }
